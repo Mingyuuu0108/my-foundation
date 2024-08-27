@@ -1,13 +1,6 @@
-//
-//  AppStorage.swift
-//  MyFoundation
-//
-//  Created by 이민규 on 8/27/24.
-//
-
 import Foundation
 
-open class AppStorage {
+public class AppStorage {
     public static let standard = UserDefaults.standard
     
     public static func get(for key: String) -> String {
