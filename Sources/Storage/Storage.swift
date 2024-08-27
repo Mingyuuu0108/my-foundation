@@ -1,11 +1,11 @@
 import Foundation
 
-public class AppStorage {
+public class Storage {
     public static let standard = UserDefaults.standard
     
-    public static func get(for key: String) -> String {
+    public static func get(for key: String) throws -> String {
         guard let value = standard.string(forKey: key) else {
-            return "error"
+            throw StorageError.valueNotFound
         }
         return value
     }
@@ -16,12 +16,6 @@ public class AppStorage {
     
     public static func remove(for key: String) {
         standard.removeObject(forKey: key)
-    }
-    
-    public static func read(for key: String) {
-        if let value = standard.string(forKey: key) {
-            print("\(key) : \(value)")
-        }
     }
     
     public static func readAll() {
