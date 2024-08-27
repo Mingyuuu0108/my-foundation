@@ -10,6 +10,7 @@ public class Keychain {
         if let service = service {
             query[kSecAttrService] = service
         }
+        
         return query
     }
     
@@ -24,21 +25,37 @@ public class Keychain {
         guard status == errSecSuccess,
               let data = item as? Data,
               let value = String(data: data, encoding: .utf8) else {
-            throw KeychainError.unhandledError(status: status)
+            throw KeychainError.valueNotFound
         }
+        
         return value
     }
     
-    public static func set(_ value: String, for key: String, service: String? = nil) throws {
+    public static func set(_ value: String, for key: String, service: String? = nil) {
         let encodedData = value.data(using: String.Encoding.utf8)!
         var query = keychainQuery(key, service)
         query[kSecValueData] = encodedData
         
         let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw KeychainError.unhandledError(status: status)
+        
+        if status == errSecDuplicateItem {
+            update(value, for: key, service: service)
         }
     }
     
-    public static func remove(for key: String, service: String? = nil) { }
+    public static func update(_ value: String, for key: String, service: String? = nil) {
+        let encodedData = value.data(using: String.Encoding.utf8)!
+        let query = keychainQuery(key, service)
+        
+        SecItemUpdate(
+            query as CFDictionary,
+            [kSecValueData: encodedData] as CFDictionary
+        )
+    }
+    
+    public static func remove(for key: String, service: String? = nil) {
+        let query = keychainQuery(key, service)
+        
+        SecItemDelete(query as CFDictionary)
+    }
 }
