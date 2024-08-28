@@ -5,7 +5,7 @@ public struct BackspaceObservingTextField: View {
     @Binding var text: String
     let action: () -> Void
     
-    init(_ placeHolder: String, text: Binding<String>, action: @escaping () -> Void) {
+    public init(_ placeHolder: String, text: Binding<String>, action: @escaping () -> Void) {
         self.placeHolder = placeHolder
         self._text = text
         self.action = action
@@ -29,7 +29,7 @@ public struct UIKitTextField: UIViewRepresentable {
     @Binding var text: String
     let backspaceAction: () -> Void
     
-    init(text: Binding<String>, backspaceAction: @escaping () -> Void) {
+    public init(text: Binding<String>, backspaceAction: @escaping () -> Void) {
         self._text = text
         self.backspaceAction = backspaceAction
     }
