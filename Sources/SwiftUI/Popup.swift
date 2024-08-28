@@ -2,10 +2,16 @@ import SwiftUI
 
 public struct Popup<C: View>: ViewModifier {
     @Binding var isPresented: Bool
+    let popupDuration: TimeInterval
     let popupContent: C
     
-    init(isPresented: Binding<Bool>, content: C) {
+    init(
+        isPresented: Binding<Bool>, 
+        duration: TimeInterval,
+        content: C
+    ) {
         self._isPresented = isPresented
+        self.popupDuration = duration
         self.popupContent = content
     }
     
@@ -17,40 +23,67 @@ public struct Popup<C: View>: ViewModifier {
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 0)
                 .scaleEffect(isPresented ? 1.0 : 0.85)
                 .opacity(isPresented ? 1.0 : 0)
-                .animation(.easeInOut(duration: 0.1), value: isPresented)
+                .animation(.easeInOut(duration: popupDuration), value: isPresented)
         }
-        .animation(.easeInOut(duration: 0.1), value: isPresented)
+        .animation(.easeInOut(duration: popupDuration), value: isPresented)
     }
 }
 
 public extension View {
-    func popup<C: View>(isPresented: Binding<Bool>,
-                        @ViewBuilder content: () -> C) -> some View {
+    func popup<C: View>(
+        isPresented: Binding<Bool>,
+        duration popupDuration: TimeInterval = 0.15,
+        @ViewBuilder content: () -> C
+    ) -> some View {
         self
-            .modifier(Popup(isPresented: isPresented, content: content()))
+            .modifier(Popup(
+                isPresented: isPresented,
+                duration: popupDuration,
+                content: content()
+            ))
     }
 }
 
-
 #Preview {
-    struct PopupPreview: View {
-        @State private var isPresented: Bool = false
+    struct Popup_Preview: View {
+        @State private var isPresented1: Bool = false
+        @State private var isPresented2: Bool = false
         
         var body: some View {
             VStack {
-                Button("팝업") {
-                    isPresented.toggle()
+                Button("팝업 (Default duration)") {
+                    isPresented1.toggle()
                 }
                 .padding(.top, 40)
+                Button("팝업 (0.5 duration)") {
+                    isPresented2.toggle()
+                }
                 Spacer()
             }
-            .popup(isPresented: $isPresented) {
+            .popup(isPresented: $isPresented1) {
                 VStack {
-                    Text("팝업")
+                    Text("팝업 1")
                         .font(.title2)
                         .foregroundStyle(.white)
                     Button {
-                        isPresented.toggle()
+                        isPresented1.toggle()
+                    } label: {
+                        Text("dismiss")
+                            .foregroundStyle(.white)
+                    }
+                }
+                .frame(width: 200, height: 100)
+                .background(.blue)
+                .cornerRadius(15)
+                .padding(10)
+            }
+            .popup(isPresented: $isPresented2, duration: 0.5) {
+                VStack {
+                    Text("팝업 2")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                    Button {
+                        isPresented2.toggle()
                     } label: {
                         Text("dismiss")
                             .foregroundStyle(.white)
@@ -63,5 +96,5 @@ public extension View {
             }
         }
     }
-    return PopupPreview()
+    return Popup_Preview()
 }
