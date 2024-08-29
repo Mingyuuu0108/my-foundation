@@ -17,7 +17,6 @@ public struct BackspaceObservingTextField: View {
                 Text(placeHolder)
                     .foregroundStyle(.gray.opacity(0.3))
             }
-            
             UIKitTextField(text: $text) {
                 action()
             }

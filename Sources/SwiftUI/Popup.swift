@@ -5,8 +5,8 @@ public struct Popup<C: View>: ViewModifier {
     let popupDuration: TimeInterval
     let popupContent: C
     
-    init(
-        isPresented: Binding<Bool>, 
+    public init(
+        isPresented: Binding<Bool>,
         duration: TimeInterval,
         content: C
     ) {
@@ -19,6 +19,7 @@ public struct Popup<C: View>: ViewModifier {
         ZStack {
             content
                 .disabled(isPresented)
+                .blur(radius: isPresented ? 6 : 0)
             popupContent
                 .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 0)
                 .scaleEffect(isPresented ? 1.0 : 0.85)
@@ -51,18 +52,18 @@ public extension View {
         
         var body: some View {
             VStack {
-                Button("팝업 (Default duration)") {
+                Button("Popup (Default duration)") {
                     isPresented1.toggle()
                 }
                 .padding(.top, 40)
-                Button("팝업 (0.5 duration)") {
+                Button("Popup (0.5 duration)") {
                     isPresented2.toggle()
                 }
                 Spacer()
             }
             .popup(isPresented: $isPresented1) {
                 VStack {
-                    Text("팝업 1")
+                    Text("Popup 1")
                         .font(.title2)
                         .foregroundStyle(.white)
                     Button {
@@ -79,7 +80,7 @@ public extension View {
             }
             .popup(isPresented: $isPresented2, duration: 0.5) {
                 VStack {
-                    Text("팝업 2")
+                    Text("Popup 2")
                         .font(.title2)
                         .foregroundStyle(.white)
                     Button {
